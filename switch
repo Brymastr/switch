@@ -2,6 +2,13 @@
 BASE_PATH=~/dev/github.com/bailey-nelson
 BASE_URL=git@github.com:Bailey-Nelson
 
+if [ -z $1 ]; then
+  echo -e "ERROR: missing repo-name"
+  echo -e "  usage: switch [repo-name]"
+  echo -e "  example:\n    $ switch pipeline"
+  return 1
+fi
+
 if [ -d "$BASE_PATH/$1/.git" ]; then
   cd $BASE_PATH/$1
 else

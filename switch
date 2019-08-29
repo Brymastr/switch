@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+BASE_PATH=~/dev/github.com/bailey-nelson
+BASE_URL=git@github.com:Bailey-Nelson
+
+if [ -d "$BASE_PATH/$1/.git" ]; then
+  cd $BASE_PATH/$1
+else
+  git clone $BASE_URL/$1.git $BASE_PATH/$1 && \
+    cd $BASE_PATH/$1
+fi

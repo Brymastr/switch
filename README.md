@@ -10,7 +10,7 @@ Easily switch directories to the desired github repository and clone if necessar
 
 ### curl
 
-`curl -L -o install.sh https://github.com/Bailey-Nelson/switch/releases/download/v0.2-alpha/install.sh | bash`
+`curl -L https://github.com/Bailey-Nelson/switch/releases/download/v0.2-alpha/install.sh | bash`
 
 ### git
 

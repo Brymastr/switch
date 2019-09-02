@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-BASE_PATH=~/dev/github.com/bailey-nelson
-BASE_URL=git@github.com:Bailey-Nelson
+
+FILE=~/.bnswitch
+[ ! -f "$FILE" ] && touch ~/.bnswitch
+source $FILE
 
 if [ -z $1 ]; then
   echo -e "ERROR: missing repo-name"
@@ -9,9 +11,20 @@ if [ -z $1 ]; then
   return 1
 fi
 
-if [ -d "$BASE_PATH/$1/.git" ]; then
-  cd $BASE_PATH/$1
-else
-  git clone $BASE_URL/$1.git $BASE_PATH/$1 && \
-    cd $BASE_PATH/$1
+if [ -z "$org_name" ]; then
+  echo -n 'github org: '
+  read org_name
+  echo "org_name=$org_name" >> $FILE
 fi
+
+BASE_PATH="dev/github.com/$org_name"
+BASE_URL="git@github.com:$org_name"
+DIR=~/$BASE_PATH/$1
+
+if [ -d $DIR ]; then
+  cd ~/$BASE_PATH/$1
+else
+  git clone $BASE_URL/$1.git ~/$BASE_PATH/$1 && \
+    cd ~/$BASE_PATH/$1
+fi
+

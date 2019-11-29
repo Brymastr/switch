@@ -3,19 +3,25 @@
 BASE_PATH="dev/github.com"
 BASE_URL="git@github.com"
 CONFIG_FILE=~/.bnswitch
+ORG_NAME=
 
 # create a config file if it doesn't exist
-[ ! -f "$CONFIG_FILE" ] && touch ~/.bnswitch
+[[ ! -f "$CONFIG_FILE" ]] && touch ~/.bnswitch
+
+source $CONFIG_FILE
 
 # function to clone and change directories
-# $1 is org name, $2 is repo name
+# $1 is repo name
 function switchToRepo {
-  DIR=~/$BASE_PATH/$1/$2
+  # set org if not already set
+  [[ -z $ORG_NAME ]] && setOrg
+
+  DIR=~/$BASE_PATH/$ORG_NAME/$1
   # clone repo if it doesn't exist locally
-  [ ! -d $DIR ] && git clone $BASE_URL:$1/$2.git $DIR
+  [ ! -d $DIR ] && git clone $BASE_URL:$ORG_NAME/$1.git $DIR
   # change to local repo directory if clone was successful or already exists
-  echo switching to \"$2\"
-  [ -d $DIR ] && cd $DIR
+  echo "switching to '$1'"
+  [[ -d $DIR ]] && cd $DIR
 }
 
 # help text
@@ -27,10 +33,32 @@ function usage {
 
 # specify and save github organization name
 function setOrg {
-  echo -n 'github org: '
-  read org_name
-  echo "org_name=$org_name" >> $CONFIG_FILE
-  echo 'github organization set to "$org_name"'
+  local org_name=
+
+  # explicit
+  if [[ -n $1 ]]; then
+    org_name=$1
+
+  # env
+  elif [[ -n "$ORG_NAME" ]]; then
+    org_name=$ORG_NAME
+
+  # request
+  else
+    printf 'github org: '
+    read org_name
+  fi
+
+  ORG_NAME=$(toLower $org_name)
+
+  echo "ORG_NAME=$ORG_NAME" > $CONFIG_FILE
+  echo "github organization set to '$ORG_NAME'"
+}
+
+# return lower case of input
+function toLower {
+  local lower=$(echo $1 | tr '[:upper:]' '[:lower:]')
+  echo $lower
 }
 
 # if no arguments
@@ -51,35 +79,16 @@ case $key in
   exit 0
   ;;
   -o|--org)
-  ORGNAME="$2"
+  setOrg $2
   shift
   shift
   ;;
   *)
-  REPONAME="$1"
+  switchToRepo $1
   shift
   ;;
 esac
 done
-
-# set org_name if provided
-if [ -n "$ORGNAME" ]; then
-  echo "org_name=$ORGNAME" >> $CONFIG_FILE
-  echo github organization set to \"$ORGNAME\"
-
-  # switch
-  [[ -n "$REPONAME" ]] && switchToRepo $ORGNAME $REPONAME
-
-# otherwise read from file or ask for org name
-else
-  # read $org_name from config file
-  source $CONFIG_FILE
-  # set org_name if not provided or already set
-  [[ -z "$org_name" ]] && setOrg
-
-  # switch
-  [[ -n "$REPONAME" ]] && switchToRepo $org_name $REPONAME
-fi
 
 # clean up
 unset org_name

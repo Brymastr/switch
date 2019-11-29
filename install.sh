@@ -18,7 +18,7 @@ DIR=~/dev/github.com/bailey-nelson/switch
 
 # download `switch`
 cd $DIR
-curl -L -o switch https://github.com/Bailey-Nelson/switch/releases/download/v0.3/switch
+curl -L -o switch https://github.com/Bailey-Nelson/switch/releases/download/v0.4/switch
 # TODO: check that the downloaded file matches the signature
 chmod +x switch
 

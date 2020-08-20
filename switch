@@ -6,7 +6,7 @@ CONFIG_FILE=~/.bnswitch
 ORG_NAME=
 
 # create a config file if it doesn't exist
-[[ ! -f "$CONFIG_FILE" ]] && touch ~/.bnswitch
+[ ! -f "$CONFIG_FILE" ] && touch ~/.bnswitch
 
 source $CONFIG_FILE
 
@@ -34,6 +34,7 @@ function usage {
 # specify and save github organization name
 function setOrg {
   local org_name=
+  local save=${2:-0}
 
   # explicit
   if [[ -n $1 ]]; then
@@ -51,8 +52,10 @@ function setOrg {
 
   ORG_NAME=$(toLower $org_name)
 
-  echo "ORG_NAME=$ORG_NAME" > $CONFIG_FILE
-  echo "github organization set to '$ORG_NAME'"
+  if [[ $save -eq 1 ]]; then
+    echo "ORG_NAME=$ORG_NAME" > $CONFIG_FILE
+    echo "github organization set to '$ORG_NAME'"
+  fi
 }
 
 # return lower case of input
@@ -80,6 +83,11 @@ case $key in
   ;;
   -o|--org)
   setOrg $2
+  shift
+  shift
+  ;;
+  -O|--org-save)
+  setOrg $2 1
   shift
   shift
   ;;

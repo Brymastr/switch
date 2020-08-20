@@ -6,11 +6,15 @@ Easily switch directories to the desired github repository and clone if necessar
 
 ### wget
 
-`wget -O - https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash`
+```console
+$ wget -O - https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash
+```
 
 ### curl
 
-`curl -L https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash`
+```console
+$ curl -L https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash
+```
 
 ### git
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 CONFIG_FILE=~/.bnswitch
-platform=`uname`
+platform=`uname -s`
 profile='unknown'
 aliases=~/.bash_aliases
+release_url="https://github.com/Bailey-Nelson/switch/releases/download/v0.5/switch"
 
 # create the config file for `switch` if it doesn't exist
 [ ! -f "$CONFIG_FILE" ] && touch ~/.bnswitch
@@ -18,8 +19,14 @@ DIR=~/dev/github.com/bailey-nelson/switch
 
 # download `switch`
 cd $DIR
-curl -L -o switch https://github.com/Bailey-Nelson/switch/releases/download/v0.4/switch
-# TODO: check that the downloaded file matches the signature
+
+if command -v curl &> /dev/null
+then
+  curl -L -o switch $release_url
+else
+  wget -O switch $release_url
+fi
+
 chmod +x switch
 
 # find which bash profile to update

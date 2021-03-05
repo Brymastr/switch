@@ -1,37 +1,29 @@
 #!/usr/bin/env bash
 
-BASE_PATH="dev/github.com"
-BASE_URL="git@github.com"
-CONFIG_FILE=~/.bnswitch
+PLATFORM=github
+PLATFORM_URL=github.com
 ORG_NAME=
-
-# create a config file if it doesn't exist
-[ ! -f "$CONFIG_FILE" ] && touch ~/.bnswitch
-
-source $CONFIG_FILE
-
-# function to clone and change directories
-# $1 is repo name
-function switchToRepo {
-  # set org if not already set
-  [[ -z $ORG_NAME ]] && setOrg
-
-  DIR=~/$BASE_PATH/$ORG_NAME/$1
-  # clone repo if it doesn't exist locally
-  [ ! -d $DIR ] && git clone $BASE_URL:$ORG_NAME/$1.git $DIR
-  # change to local repo directory if clone was successful or already exists
-  echo "switching to '$1'"
-  [[ -d $DIR ]] && cd $DIR
-}
+SAVE_ORG_NAME=0
+REPO_NAME=
+CONFIG_FILE=~/.bnswitch
 
 # help text
 function usage {
-  echo -e "usage: switch [-h | --help] [-o | --org <organization>] <repo-name>"
-  echo -e "examples:\n  $ switch looker-schema"
+  echo -e "usage: switch [-h | --help] [-o | --org <organization>] [--github | --gitlab] <repo-name>"
+  echo -e "examples:"
+  echo -e "  $ switch looker-schema"
   echo -e "  $ switch --org bailey-nelson pipeline"
+  echo -e "  $ switch --org-save bailey-nelson pipeline"
 }
 
-# specify and save github organization name
+# if no arguments
+if [[ $# -eq 0 ]]; then
+  echo "ERROR: missing repo-name"
+  usage
+  exit 0
+fi
+
+# specify and save organization name
 function setOrg {
   local org_name=
   local save=${2:-0}
@@ -46,7 +38,7 @@ function setOrg {
 
   # request
   else
-    printf 'github org: '
+    printf '$platform org: '
     read org_name
   fi
 
@@ -54,8 +46,19 @@ function setOrg {
 
   if [[ $save -eq 1 ]]; then
     echo "ORG_NAME=$ORG_NAME" > $CONFIG_FILE
-    echo "github organization set to '$ORG_NAME'"
+    echo "$PLATFORM organization set to '$ORG_NAME'"
   fi
+}
+
+# function to clone and change directories
+# $1 is repo name
+function switchToRepo {
+  DIR=~/dev/$PLATFORM_URL/$ORG_NAME/$1
+  # clone repo if it doesn't exist locally
+  [ ! -d $DIR ] && git clone git@$PLATFORM_URL:$ORG_NAME/$1.git $DIR
+  # change to local repo directory if clone was successful or already exists
+  echo "switching to '$1'"
+  [[ -d $DIR ]] && cd $DIR
 }
 
 # return lower case of input
@@ -64,14 +67,6 @@ function toLower {
   echo $lower
 }
 
-# if no arguments
-if [[ $# -eq 0 ]] ; then
-  echo "ERROR: missing repo-name"
-  usage
-  exit 0
-fi
-
-# read arguments
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -82,21 +77,39 @@ case $key in
   exit 0
   ;;
   -o|--org)
-  setOrg $2
+  ORG_NAME=$2
   shift
   shift
   ;;
   -O|--org-save)
-  setOrg $2 1
+  ORG_NAME=$2
+  SAVE_ORG_NAME=1
   shift
   shift
   ;;
+  --github)
+  PLATFORM=github
+  PLATFORM_URL=github.com
+  shift
+  ;;
+  --gitlab)
+  PLATFORM=gitlab
+  PLATFORM_URL=gitlab.com
+  shift
+  ;;
   *)
-  switchToRepo $1
+  REPO_NAME=$1
   shift
   ;;
 esac
 done
 
-# clean up
-unset org_name
+setOrg $ORG_NAME $SAVE_ORG_NAME
+
+switchToRepo $REPO_NAME
+
+unset PLATFORM
+unset PLATFORM_URL
+unset ORG_NAME
+unset SAVE_ORG_NAME
+unset REPO_NAME

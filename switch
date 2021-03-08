@@ -50,7 +50,7 @@ function setOrg {
   ORG_NAME=$(toLower $org_name)
 
   if [[ $save -eq 1 ]]; then
-    echo "ORG_NAME=$ORG_NAME" > $CONFIG_FILE
+    echo "ORG_NAME=$ORG_NAME\nPLATFORM_URL=$PLATFORM_URL" > $CONFIG_FILE
     echo "$PLATFORM organization set to '$ORG_NAME'"
   fi
 }

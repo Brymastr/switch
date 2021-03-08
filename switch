@@ -7,6 +7,11 @@ SAVE_ORG_NAME=0
 REPO_NAME=
 CONFIG_FILE=~/.bnswitch
 
+# create a config file if it doesn't exist
+[ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
+
+source $CONFIG_FILE
+
 # help text
 function usage {
   echo -e "usage: switch [-h | --help] [-o | --org <organization>] [--github | --gitlab] <repo-name>"

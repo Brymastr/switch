@@ -7,13 +7,13 @@ Easily switch directories to the desired github repository and clone if necessar
 ### wget
 
 ```console
-$ wget -O - https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash
+$ wget -O - https://github.com/Brymastr/switch/releases/download/v0.4/install.sh | bash
 ```
 
 ### curl
 
 ```console
-$ curl -L https://github.com/Bailey-Nelson/switch/releases/download/v0.4/install.sh | bash
+$ curl -L https://github.com/Brymastr/switch/releases/download/v0.4/install.sh | bash
 ```
 
 ### git

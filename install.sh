@@ -49,10 +49,12 @@ fi
 function updateBashrc {
   if ! grep -q "[ -e $aliases ]" $profile; then
   cat >>$profile <<EOL
+
 # Aliases go in their own file
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi
+
 EOL
 fi
 }
@@ -60,8 +62,10 @@ fi
 function updateZshrc {
   if ! grep -q "source \$HOME/.zaliases" $profile; then
   cat >>$profile <<EOL
+
 # aliases
 source $HOME/.zaliases
+
 EOL
 fi
 }

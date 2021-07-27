@@ -34,16 +34,17 @@ function setOrg {
   local save=${2:-0}
 
   # explicit
-  if [[ -n $1 ]]; then
+  if [[ $1 -ne 0 ]]; then
     org_name=$1
 
   # env
-  elif [[ $ORG_NAME -ne 0 ]]; then
+  elif [[ "$ORG_NAME" != "0" ]]; then
     org_name=$ORG_NAME
 
   # request
   else
-    printf '$platform org: '
+    save=1
+    printf "$PLATFORM org: "
     read org_name
   fi
 

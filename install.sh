@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
-CONFIG_FILE=~/.bnswitch
+CONFIG_FILE=~/.bryswitch
 platform=`uname -s`
-profile='unknown'
-aliases=~/.bash_aliases
-release_url="https://github.com/Bailey-Nelson/switch/releases/download/v0.5/switch"
+profile=
+aliases=
+shell=
+release_url="https://github.com/Brymastr/switch/releases/download/v0.6/switch"
 
-# create the config file for `switch` if it doesn't exist
-[ ! -f "$CONFIG_FILE" ] && touch ~/.bnswitch
-
-# create ~/.bash_aliases if it doesn't exist
-[ ! -d $aliases ] && touch $aliases
 
 # directory where `switch` will live
-DIR=~/dev/github.com/bailey-nelson/switch
+DIR=~/dev/github.com/brymastr/switch
 
 # create the dir if it does not exist
 [ ! -d $DIR ] && mkdir -p $DIR
+
+# create the config file for `switch` if it doesn't exist
+[ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
 
 # download `switch`
 cd $DIR
@@ -29,27 +28,58 @@ fi
 
 chmod +x switch
 
-# find which bash profile to update
-if [ -f ~/.bash_profile ]; then
-  profile='.bash_profile'
+# find which shell profile to update
+if [ -f ~/.zshrc ]; then
+  profile="$HOME/.zshrc"
+  aliases="$HOME/.zaliases"
+  shell='zsh'
 elif [ -f ~/.bashrc ]; then
-  profile='.bashrc'
+  profile="$HOME/.bashrc"
+  aliases="$HOME/.bash_aliases"
+  shell='bash'
+elif [ -f ~/.bash_profile ]; then
+  profile="$HOME/.bash_profile"
+  aliases="$HOME/.bash_aliases"
+  shell='bash'
 fi
 
-# update ~/.bash_aliases with the required alias
-if ! grep -Fxq "alias switch='source $DIR/switch'" $aliases; then
-  echo '# bailey-nelson/switch - `source` is required in order to change directories in a shell script' >> $aliases
-  echo "alias switch='source $DIR/switch'" >> $aliases
-fi
+# create aliases file if it doesn't exist
+[ ! -e $aliases ] && touch $aliases
 
-# add a reference to ~/.bash_aliases if one does not already exist
-if ! grep -q "[ -f $aliases ]" ~/$profile; then
-  echo $'# Aliases go in their own file
+function updateBashrc {
+  if ! grep -q "[ -e $aliases ]" $profile; then
+  cat >>$profile <<EOL
+# Aliases go in their own file
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
 fi
-' >> ~/$profile
+EOL
+fi
+}
+
+function updateZshrc {
+  if ! grep -q "source \$HOME/.zaliases" $profile; then
+  cat >>$profile <<EOL
+# aliases
+source $HOME/.zaliases
+EOL
+fi
+}
+
+# update aliases with the required alias
+if ! grep -Fxq "alias switch='source $DIR/switch'" $aliases; then
+  echo '# brymastr/switch - `source` is required in order to change directories in a shell script' >> $aliases
+  echo "alias switch='source $DIR/switch'" >> $aliases
 fi
 
-echo "complete! you may need to source your ~/$profile before using switch"
-echo "  example: $ . ~/$profile"
+if [[ "$shell" -eq "zsh" ]]; then 
+  updateZshrc
+elif [[ "$shell" -eq "bash" ]]; then 
+  updateBashrc
+else
+  echo "ERROR: Incompatible shell configuration detected."
+  exit 1
+fi
+
+echo "Complete! you may need to source your $profile before using switch"
+echo "  example: $ . $profile"

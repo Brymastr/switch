@@ -5,7 +5,7 @@ PLATFORM_URL=github.com
 ORG_NAME=
 SAVE_ORG_NAME=0
 REPO_NAME=
-CONFIG_FILE=~/.bnswitch
+CONFIG_FILE=~/.bryswitch
 
 # create a config file if it doesn't exist
 [ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
@@ -16,9 +16,9 @@ source $CONFIG_FILE
 function usage {
   echo -e "usage: switch [-h | --help] [-o | --org <organization>] [--github | --gitlab] <repo-name>"
   echo -e "examples:"
-  echo -e "  $ switch looker-schema"
-  echo -e "  $ switch --org bailey-nelson pipeline"
-  echo -e "  $ switch --org-save bailey-nelson pipeline"
+  echo -e "  $ switch slack-action"
+  echo -e "  $ switch --org brymastr blog"
+  echo -e "  $ switch --org-save brymastr pr-info-action"
 }
 
 # if no arguments
@@ -38,7 +38,7 @@ function setOrg {
     org_name=$1
 
   # env
-  elif [[ -n "$ORG_NAME" ]]; then
+  elif [[ $ORG_NAME -ne 0 ]]; then
     org_name=$ORG_NAME
 
   # request
@@ -62,7 +62,7 @@ function switchToRepo {
   # clone repo if it doesn't exist locally
   [ ! -d $DIR ] && git clone git@$PLATFORM_URL:$ORG_NAME/$1.git $DIR
   # change to local repo directory if clone was successful or already exists
-  echo "switching to '$1'"
+  echo "Switching to '$1'"
   [[ -d $DIR ]] && cd $DIR
 }
 
@@ -74,39 +74,39 @@ function toLower {
 
 while [[ $# -gt 0 ]]
 do
-key="$1"
+  key="$1"
 
-case $key in
-  -h|--help)
-  usage
-  exit 0
-  ;;
-  -o|--org)
-  ORG_NAME=$2
-  shift
-  shift
-  ;;
-  -O|--org-save)
-  ORG_NAME=$2
-  SAVE_ORG_NAME=1
-  shift
-  shift
-  ;;
-  --github)
-  PLATFORM=github
-  PLATFORM_URL=github.com
-  shift
-  ;;
-  --gitlab)
-  PLATFORM=gitlab
-  PLATFORM_URL=gitlab.com
-  shift
-  ;;
-  *)
-  REPO_NAME=$1
-  shift
-  ;;
-esac
+  case $key in
+    -h|--help)
+    usage
+    exit 0
+    ;;
+    -o|--org)
+    ORG_NAME=$2
+    shift
+    shift
+    ;;
+    -O|--org-save)
+    ORG_NAME=$2
+    SAVE_ORG_NAME=1
+    shift
+    shift
+    ;;
+    -gh|--github)
+    PLATFORM=github
+    PLATFORM_URL=github.com
+    shift
+    ;;
+    -gl|--gitlab)
+    PLATFORM=gitlab
+    PLATFORM_URL=gitlab.com
+    shift
+    ;;
+    *)
+    REPO_NAME=$1
+    shift
+    ;;
+  esac
 done
 
 setOrg $ORG_NAME $SAVE_ORG_NAME

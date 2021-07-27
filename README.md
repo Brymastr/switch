@@ -2,18 +2,18 @@
 
 Easily switch directories to the desired github repository and clone if necessary.
 
-## Installing
+## Install
 
 ### wget
 
-```console
-$ wget -O - https://github.com/Brymastr/switch/releases/download/v0.5/install.sh | bash
+```bash
+wget -O - https://github.com/Brymastr/switch/releases/download/v0.6/install.sh | bash
 ```
 
 ### curl
 
-```console
-$ curl -L https://github.com/Brymastr/switch/releases/download/v0.5/install.sh | bash
+```bash
+curl -L https://github.com/Brymastr/switch/releases/download/v0.6/install.sh | bash
 ```
 
 ### git
@@ -24,26 +24,57 @@ $ curl -L https://github.com/Brymastr/switch/releases/download/v0.5/install.sh |
 
 ## Usage
 
-When using switch for the first time you will be asked for a github organization name. This can also be a personal account name.
+When using switch for the first time you will be asked for a github organization name. This can also be a personal account name:
 
 ```bash
-~$ switch looker-schema
-github org: bailey-nelson
-Cloning into '~/dev/github.com/bailey-nelson/looker-schema'...
+~$ switch aws-sdk-js
+github org: aws
+Cloning into '~/dev/github.com/aws/aws-sdk-js'...
 ...
-switching to "looker-schema"
-~/dev/github.com/bailey-nelson/looker-schema$
+Switching to 'aws-sdk-js'
+~/dev/github.com/aws/aws-sdk-js$
 ```
 
-You can also set the organization name with an argument.
+The organization name can also be set with the `--org` option:
 
 ```bash
-~$ switch --org bailey-nelson pipeline
-github organization set to "bailey-nelson"
-Cloning into '~/dev/github.com/bailey-nelson/pipeline'...
+~$ switch --org facebook react
+Cloning into '~/dev/github.com/facebook/react'...
 ...
-switching to "pipeline"
-~/dev/github.com/bailey-nelson/pipeline$
+Switching to 'react'
+~/dev/github.com/facebook/react$
+```
+
+The above example will only use `facebook` as the organization name for that invocation. To persist the org name for future commands use the `--org-save` option:
+
+```bash
+~$ switch --org-save google flatbuffers
+github organization set to 'google'
+Cloning into '~/dev/github.com/google/flatbuffers'...
+...
+Switching to 'flatbuffers'
+~/dev/github.com/google/flatbuffers$
+
+# future invocations will use the google org without the --org option
+~/dev/github.com/google/flatbuffers$ switch gson
+Cloning into '~/dev/github.com/google/gson'...
+...
+Switching to 'gson'
+~/dev/github.com/google/gson$
+```
+
+These examples all use GitHub repositories but it is also possible to clone GitLab repositories via the `--gitlab` flag:
+
+```bash
+~$ switch --gitlab --org-save fdroid fdroidclient
+gitlab organization set to 'fdroid'
+Cloning into '~/dev/github.com/fdroid/fdroidclient'...
+...
+Switching to 'fdroidclient'
+~/dev/gitlab.com/fdroid/fdroidclient$
+# This will persist both the org name as well as your preference for GitLab
+#   meaning both --gitlab and --org can be ommitted in your next invocation
+#   if you want to switch to another GitLab repo within the same org
 ```
 
 ## Assumptions
@@ -52,6 +83,8 @@ switching to "pipeline"
 - A `.bash_aliases` file will be created and linked to if one does not exist
 
 ## Notes
+
+This script plays nicely with bash and zsh.
 
 This script sort of enforces a certain directory structure for where projects will live. If you use this script to handle cloning projects then it doesn't really matter where they go but if you're interested here's the structure:
 

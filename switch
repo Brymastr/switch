@@ -5,7 +5,8 @@ PLATFORM_URL=github.com
 ORG_NAME=
 SAVE_ORG_NAME=0
 REPO_NAME=
-CONFIG_FILE=~/.bryswitch
+CONFIG_FILE=$HOME/.bryswitch
+
 
 # create a config file if it doesn't exist
 [ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
@@ -14,18 +15,30 @@ source $CONFIG_FILE
 
 # help text
 function usage {
-  echo -e "usage: switch [-h | --help] [-o | --org <organization>] [--github | --gitlab] <repo-name>"
-  echo -e "examples:"
+  echo -e "Usage: switch [OPTIONS] <repo-name>"
+  echo -e 
+  echo -e "Switch to a specified github repository and git clone if not found locally."
+  echo -e 
+  echo -e "Options:"
+  echo -e "  -h,  --help             Show this help message and exit."
+  echo -e "  -o,  --org string       Specify the organization the desired repo resides in."
+  echo -e "  -O,  --org-save string  Same as -o but org name is persisted for future invocations."
+  echo -e "  -gh, --github           Indicate that <repo-name> is a GitHub repository. Note: this is the default."
+  echo -e "  -gl, --gitlab           Indicate that <repo-name> is a GitLab repository."
+  echo -e 
+  echo -e "Examples:"
   echo -e "  $ switch slack-action"
-  echo -e "  $ switch --org brymastr blog"
-  echo -e "  $ switch --org-save brymastr pr-info-action"
+  echo -e "  $ switch --org facebook react"
+  echo -e "  $ switch --org-save google gson"
+  echo -e "  $ switch --gitlab --org-save fdroid fdroidclient"
 }
 
 # if no arguments
 if [[ $# -eq 0 ]]; then
   echo "ERROR: missing repo-name"
+  echo -e 
   usage
-  exit 0
+  return
 fi
 
 # specify and save organization name
@@ -80,7 +93,7 @@ do
   case $key in
     -h|--help)
     usage
-    exit 0
+    return
     ;;
     -o|--org)
     ORG_NAME=$2

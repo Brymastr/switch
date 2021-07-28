@@ -1,30 +1,29 @@
 #!/usr/bin/env bash
-CONFIG_FILE=~/.bryswitch
-platform=`uname -s`
+CONFIG_FILE="$HOME/.bryswitch"
 profile=
 aliases=
 shell=
-release_url="https://github.com/Brymastr/switch/releases/download/v0.6/switch"
+release="v0.7"
 
 
-# directory where `switch` will live
-DIR=~/dev/github.com/brymastr/switch
+# directory where `switch` repo will live
+DIR=$HOME/dev/github.com/brymastr
 
 # create the dir if it does not exist
 [ ! -d $DIR ] && mkdir -p $DIR
 
 # create the config file for `switch` if it doesn't exist
-[ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
+[ ! -e "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
 
-# download `switch`
+# clone `switch`
 cd $DIR
 
-if command -v curl &> /dev/null
-then
-  curl -L -o switch $release_url
-else
-  wget -O switch $release_url
-fi
+# clone if doesn't already exist
+[ ! -d "$DIR/switch/.git" ] && git clone git@github.com:Brymastr/switch.git
+
+cd switch
+
+git checkout tags/$release -b release-$release
 
 chmod +x switch
 
@@ -71,9 +70,10 @@ fi
 }
 
 # update aliases with the required alias
-if ! grep -Fxq "alias switch='source $DIR/switch'" $aliases; then
+alias="alias switch='source $DIR/switch/switch'"
+if ! grep -Fxq "$alias" $aliases; then
   echo '# brymastr/switch - `source` is required in order to change directories in a shell script' >> $aliases
-  echo "alias switch='source $DIR/switch'" >> $aliases
+  echo "$alias" >> $aliases
 fi
 
 if [[ "$shell" -eq "zsh" ]]; then 

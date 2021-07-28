@@ -79,12 +79,13 @@ Switching to 'fdroidclient'
 
 ## Assumptions
 
-- `.bash_profile` is used if it exists. Otherwise `.bashrc` is used.
-- A `.bash_aliases` file will be created and linked to if one does not exist
+- If a `.zshrc` file exists it is assumed that zsh is the preferred shell.
+- Otherwise `.bash_profile` or `.bashrc` are used if either exist respectively.
+- A `.bash_aliases` or `.zaliases` file will be created and linked to if one does not exist
 
 ## Notes
 
-This script plays nicely with bash and zsh.
+This script plays nicely with bash and zsh and will prioritize zsh.
 
 This script sort of enforces a certain directory structure for where projects will live. If you use this script to handle cloning projects then it doesn't really matter where they go but if you're interested here's the structure:
 

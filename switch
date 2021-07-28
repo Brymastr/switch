@@ -17,7 +17,7 @@ source $CONFIG_FILE
 function usage {
   echo -e "Usage: switch [OPTIONS] <repo-name>"
   echo -e 
-  echo -e "Switch to a specified github repository and git clone if not found locally."
+  echo -e "Switch to a specified git repository and clone if not found locally."
   echo -e 
   echo -e "Options:"
   echo -e "  -h,  --help             Show this help message and exit."
@@ -46,13 +46,9 @@ function setOrg {
   local org_name=
   local save=${2:-0}
 
-  # explicit
-  if [[ $1 -ne 0 ]]; then
+  # org provided via either param or persisted
+  if [[ ! -z "$1" ]]; then
     org_name=$1
-
-  # env
-  elif [[ "$ORG_NAME" != "0" ]]; then
-    org_name=$ORG_NAME
 
   # request
   else
@@ -123,12 +119,13 @@ do
   esac
 done
 
-setOrg $ORG_NAME $SAVE_ORG_NAME
+setOrg "$ORG_NAME" "$SAVE_ORG_NAME"
 
-switchToRepo $REPO_NAME
+switchToRepo "$REPO_NAME"
 
 unset PLATFORM
 unset PLATFORM_URL
 unset ORG_NAME
 unset SAVE_ORG_NAME
 unset REPO_NAME
+unset CONFIG_FILE

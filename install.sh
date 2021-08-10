@@ -19,7 +19,7 @@ DIR=$HOME/dev/github.com/brymastr
 cd $DIR
 
 # clone if doesn't already exist
-[ ! -d "$DIR/switch/.git" ] && git clone git@github.com:Brymastr/switch.git
+[ ! -d "$DIR/switch/.git" ] && git clone https://github.com/Brymastr/switch.git
 
 cd switch
 

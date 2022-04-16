@@ -6,7 +6,8 @@ ORG_NAME=
 SAVE_ORG_NAME=0
 REPO_NAME=
 CONFIG_FILE=$HOME/.bryswitch
-
+PLATFORM_HOSTNAME=github.com
+ROOT_DEV_DIR=~/dev
 
 # create a config file if it doesn't exist
 [ ! -f "$CONFIG_FILE" ] && touch "$CONFIG_FILE"
@@ -15,7 +16,7 @@ source $CONFIG_FILE
 
 # help text
 function usage {
-  echo -e "Usage: switch [OPTIONS] <repo-name>"
+  echo -e "Usage: switch <repo-name> [OPTIONS]"
   echo -e 
   echo -e "Switch to a specified git repository and clone if not found locally."
   echo -e 
@@ -68,9 +69,9 @@ function setOrg {
 # function to clone and change directories
 # $1 is repo name
 function switchToRepo {
-  DIR=~/dev/$PLATFORM_URL/$ORG_NAME/$1
+  DIR=$ROOT_DEV_DIR/$PLATFORM/$ORG_NAME/$1
   # clone repo if it doesn't exist locally
-  [ ! -d $DIR ] && git clone git@$PLATFORM_URL:$ORG_NAME/$1.git $DIR
+  [ ! -d $DIR ] && git clone $PLATFORM_URL/$ORG_NAME/$1.git $DIR
   # change to local repo directory if clone was successful or already exists
   echo "Switching to '$1'"
   [[ -d $DIR ]] && cd $DIR
@@ -103,13 +104,13 @@ do
     shift
     ;;
     -gh|--github)
-    PLATFORM=github
-    PLATFORM_URL=github.com
+    PLATFORM=github.com
+    PLATFORM_URL=git@github.com:
     shift
     ;;
     -gl|--gitlab)
-    PLATFORM=gitlab
-    PLATFORM_URL=gitlab.com
+    PLATFORM=gitlab.com
+    PLATFORM_URL=git@gitlab.com:
     shift
     ;;
     *)
@@ -118,6 +119,12 @@ do
     ;;
   esac
 done
+
+# echo "Platform name: $PLATFORM"
+# echo "Org name:      $ORG_NAME"
+# echo "Platform URL:  $PLATFORM_URL"
+# echo "Clone URL:     $PLATFORM_URL$ORG_NAME/$1.git"
+# echo "Clone to:      $ROOT_DEV_DIR/$PLATFORM/$ORG_NAME/$REPO_NAME"
 
 setOrg "$ORG_NAME" "$SAVE_ORG_NAME"
 

@@ -5,7 +5,9 @@ PLATFORM_URL=github.com
 ORG_NAME=
 SAVE_ORG_NAME=0
 REPO_NAME=
+GROUP_HIERARCHY=""
 CONFIG_FILE=$HOME/.bryswitch
+DEBUG=0
 
 
 # create a config file if it doesn't exist
@@ -61,21 +63,59 @@ function setOrg {
 
   ORG_NAME=$(toLower $org_name)
 
-  if [[ $save -eq 1 ]]; then
-    echo "ORG_NAME=$ORG_NAME\nPLATFORM_URL=$PLATFORM_URL" > $CONFIG_FILE
-    echo "$PLATFORM organization set to '$ORG_NAME'"
-  fi
+  [[ $save -eq 1 ]] &&  echo "$PLATFORM organization set to '$ORG_NAME'"
 }
 
 # function to clone and change directories
 # $1 is repo name
 function switchToRepo {
-  DIR=~/dev/$PLATFORM_URL/$ORG_NAME/$1
+  url=$1
+  org=$2
+  repo=$3
+  heirarchy=$4
+  dir=~/dev/$url/$org/$repo
   # clone repo if it doesn't exist locally
-  [ ! -d $DIR ] && git clone git@$PLATFORM_URL:$ORG_NAME/$1.git $DIR
-  # change to local repo directory if clone was successful or already exists
-  echo "Switching to '$1'"
-  [[ -d $DIR ]] && cd $DIR
+  [ ! -d $dir ] && clone $url $org $repo $dir $heirarchy
+  cur_dir=$PWD
+  real_path=$(realpath $dir)
+  if [[ "$cur_dir" == "$real_path" ]]; then
+    echo "You're already here!"
+  else
+    echo "Switching to '$repo'"
+    # change to local repo directory if clone was successful or already exists
+    [[ -d $dir ]] && cd $dir
+  fi
+}
+
+function clone {
+  url=$1
+  org=$2
+  repo=$3
+  dir=$4
+  heirarchy=$5
+  echo "git clone -q git@$url:$org/${heirarchy}$repo.git $dir"
+  if ! (git clone -q git@$url:$org/${heirarchy}$repo.git $dir) then
+    if ! (git clone -q git@$url:$org/$repo.git $dir) then
+      echo "$repo is not a valid repository name"
+    else
+      # if clone worked without the hierarchy then remove the stored value
+      GROUP_HIERARCHY=""
+    fi
+  fi 
+}
+
+# save values to .bryswitch file
+function persist {
+  echo "ORG_NAME=$ORG_NAME\nPLATFORM_URL=$PLATFORM_URL\nGROUP_HIERARCHY=$GROUP_HIERARCHY" > $CONFIG_FILE
+}
+
+function debug {
+  echo ""
+  echo "Platform name: $PLATFORM"
+  echo "Platform URL:  $PLATFORM_URL"
+  echo "Org name:      $ORG_NAME"
+  echo "Clone URL:     $PLATFORM_URL/$ORG_NAME/$REPO_NAME.git"
+  echo "Clone to:      $HOME/dev/$PLATFORM_URL/$ORG_NAME/$REPO_NAME"
 }
 
 # return lower case of input
@@ -114,6 +154,14 @@ do
     PLATFORM_URL=gitlab.com
     shift
     ;;
+    -g|--group)
+    GROUP_HIERARCHY="$2/"
+    shift
+    ;;
+    --debug)
+    DEBUG=1
+    shift
+    ;;
     *)
     REPO_NAME=$1
     shift
@@ -123,7 +171,12 @@ done
 
 setOrg "$ORG_NAME" "$SAVE_ORG_NAME"
 
-switchToRepo "$REPO_NAME"
+switchToRepo "$PLATFORM_URL" "$ORG_NAME" "$REPO_NAME" "$GROUP_HIERARCHY"
+
+persist
+
+[[ $DEBUG -eq 1 ]] && debug
+
 
 unset PLATFORM
 unset PLATFORM_URL
@@ -131,3 +184,4 @@ unset ORG_NAME
 unset SAVE_ORG_NAME
 unset REPO_NAME
 unset CONFIG_FILE
+unset GROUP_HIERARCHY

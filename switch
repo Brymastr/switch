@@ -25,12 +25,14 @@ function usage {
   echo -e "  -O,  --org-save string  Same as -o but org name is persisted for future invocations."
   echo -e "  -gh, --github           Indicate that <repo-name> is a GitHub repository. Note: this is the default."
   echo -e "  -gl, --gitlab           Indicate that <repo-name> is a GitLab repository."
+  echo -e "  -g,  --group string     Specify a group hierarchy."
   echo -e 
   echo -e "Examples:"
   echo -e "  $ switch slack-action"
   echo -e "  $ switch --org facebook react"
   echo -e "  $ switch --org-save google gson"
   echo -e "  $ switch --gitlab --org-save fdroid fdroidclient"
+  echo -e "  $ switch --gitlab --org gitlab-org --group charts knative"
 }
 
 # if no arguments

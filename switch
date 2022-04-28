@@ -192,3 +192,4 @@ unset SAVE_ORG_NAME
 unset REPO_NAME
 unset CONFIG_FILE
 unset GROUP_HIERARCHY
+unset DEBUG
